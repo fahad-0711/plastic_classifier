@@ -1,30 +1,37 @@
-import boto3 # Standard AWS SDK
 import json
 
-def classify_plastic(user_input):
-    # This is a FEW-SHOT prompt.
-    # We give examples to guide the AI's logic.
-    prompt_data = f"""
-    Task: Classify the type of plastic and determine if it's 3D printable.
-    
-    Example 1:
-    Input: "A clear water bottle with a crinkly sound."
-    Output: {{ "type": "PET", "recyclable": true, "3D_printable": "No (requires industrial processing)" }}
-
-    Example 2:
-    Input: "A white milk jug, feels slightly waxy."
-    Output: {{ "type": "HDPE", "recyclable": true, "3D_printable": "Yes (good for structural parts)" }}
-
-    Input: "{user_input}"
-    Output:
+def generate_advanced_prompt(material_description):
     """
-
-    # In a real job, you'd use boto3 to call AWS Bedrock here.
-    # For today, print the prompt to prove you engineered the structure.
-    print("--- GENERATED PROMPT ---")
-    print(prompt_data)
-    print("--- END ---")
+    Implements Chain-of-Thought (CoT) and Domain-Specific constraints.
+    """
+    prompt = f"""
+    Task: Classify plastic material for 3D printing suitability.
+    
+    Context: We are using a household recycler. Safety is the priority.
+    
+    Instructions:
+    1. Analyze physical characteristics: {material_description}
+    2. Identify if it is a Thermoplastic (meltable) or Thermoset (burns/charred). 
+       *Crucial: If it is a Thermoset, 'printable' must be NO.*
+    3. Determine Resin Code (1-7).
+    4. Evaluate toxic fume risk (e.g., PVC/Code 3 is dangerous).
+    
+    Format your response:
+    - Reasoning: [Step-by-step logic]
+    - Result: {{ "code": "", "type": "", "is_thermoset": bool, "printable": "YES/NO" }}
+    """
+    return prompt
 
 if __name__ == "__main__":
-    test_waste = "A yellow detergent bottle, very thick plastic."
-    classify_plastic(test_waste)
+    # Test case: A common household item
+    test_waste = "A yellow detergent bottle, very thick, waxy surface, doesn't snap when bent."
+    
+    # Generate the prompt
+    final_prompt = generate_advanced_prompt(test_waste)
+    
+    # Print the output to see your engineering work
+    print("--- PREPARED PROMPT ---")
+    print(final_prompt)
+
+p = generate_advanced_prompt("A clear, rigid bottle with a '1' on the bottom.")
+print(p)
