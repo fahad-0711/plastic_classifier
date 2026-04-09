@@ -33,5 +33,5 @@ if __name__ == "__main__":
     print("--- PREPARED PROMPT ---")
     print(final_prompt)
 
-    p = generate_advanced_prompt("A clear, rigid bottle with a '1' on the bottom.")
+    p = generate_advanced_prompt("A clear, rigid bottle with a '3' on the bottom.")
     print(p)
